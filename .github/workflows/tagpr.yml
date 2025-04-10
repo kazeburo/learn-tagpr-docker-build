@@ -28,7 +28,7 @@ jobs:
       - name: Login to Sakura Container Registry
         uses: docker/login-action@v3
         with:
-          registry: ${{ secret.PROD_REGISTRY }}
+          registry: ${{ secrets.PROD_REGISTRY }}
           username: ${{ secrets.SAKURACR_USER }}
           password: ${{ secrets.SAKURACR_PASSWORD }}
         if: ${{ steps.tagpr.outputs.tag != ''}}
@@ -40,8 +40,8 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: |
-            ${{ secret.PROD_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ secret.PROD_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tagpr.outputs.tag }}
+            ${{ secrets.PROD_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ secrets.PROD_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tagpr.outputs.tag }}
         if: ${{ steps.tagpr.outputs.tag != ''}}
 
       - name: "[DEV] checkout pull request"
