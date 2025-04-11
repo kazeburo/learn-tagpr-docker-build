@@ -62,7 +62,7 @@ jobs:
 
       - name: "[DEV] Debug pull_request"
         run: |
-          echo "pull_request: ${{ steps.tagpr.outputs.pull_request }}"
+          echo "pull_request: '${{ steps.tagpr.outputs.pull_request }}'"
         if: ${{ steps.tagpr.outputs.pull_request != ''}}
 
       - name: "[DEV] Build and push to Sakura Container Registry"
