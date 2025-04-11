@@ -12,6 +12,8 @@ jobs:
       issues: write
     env:
       IMAGE_NAME: learn-tagpr-build
+      DEV_SAKURACR_REGISTRY: kazeburo-learn-dev.sakuracr.jp
+      PROD_SAKURACR_REGISTRY: kazeburo-learn-prod.sakuracr.jp
     steps:
       - uses: actions/checkout@v4
       - uses: Songmu/tagpr@v1
@@ -28,7 +30,7 @@ jobs:
       - name: Login to Sakura Container Registry
         uses: docker/login-action@v3
         with:
-          registry: kazeburo-learn-prod.sakuracr.jp
+          registry: ${{ env.PROD_SAKURACR_REGISTRY }}
           username: ${{ secrets.SAKURACR_USER }}
           password: ${{ secrets.SAKURACR_PASSWORD }}
         if: ${{ steps.tagpr.outputs.tag != ''}}
@@ -40,8 +42,8 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: |
-            kazeburo-learn-prod.sakuracr.jp/${{ env.IMAGE_NAME }}:latest
-            kazeburo-learn-prod.sakuracr.jp/${{ env.IMAGE_NAME }}:${{ steps.tagpr.outputs.tag }}
+            ${{ env.PROD_SAKURACR_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.PROD_SAKURACR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tagpr.outputs.tag }}
         if: ${{ steps.tagpr.outputs.tag != ''}}
 
       - name: "[DEV] checkout pull request"
@@ -53,7 +55,7 @@ jobs:
       - name: "[DEV] Login to Sakura Container Registry"
         uses: docker/login-action@v3
         with:
-          registry: kazeburo-learn-dev.sakuracr.jp
+          registry: ${{ env.DEV_SAKURACR_REGISTRY }}
           username: ${{ secrets.DEV_SAKURACR_USER }}
           password: ${{ secrets.DEV_SAKURACR_PASSWORD }}
         if: ${{ steps.tagpr.outputs.pull_request != ''}}
@@ -65,6 +67,6 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: |
-            kazeburo-learn-dev.sakuracr.jp/${{ env.IMAGE_NAME }}:latest
-            kazeburo-learn-dev.sakuracr.jp/${{ env.IMAGE_NAME }}:${{ fromJson(steps.tagpr.outputs.pull_request).haed.label }}
+            ${{ env.DEV_SAKURACR_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.DEV_SAKURACR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ fromJson(steps.tagpr.outputs.pull_request).haed.label }}
         if: ${{ steps.tagpr.outputs.pull_request != ''}}
