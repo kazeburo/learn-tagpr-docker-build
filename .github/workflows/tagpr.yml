@@ -10,24 +10,14 @@ jobs:
       contents: write
       pull-requests: write
       issues: write
+    env:
+      IMAGE_NAME: learn-tagpr-build
     steps:
       - uses: actions/checkout@v4
       - uses: Songmu/tagpr@v1
         id: tagpr
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set environment variables
-        run: |
-          echo "IMAGE_NAME=learn-tagpr-build" >> $GITHUB_ENV
-          # PROD 用レジストリを分割して再構成
-          echo "PROD_REGISTRY_PART1=kazeburo-learn-prod" >> $GITHUB_ENV
-          echo "PROD_REGISTRY_PART2=sakuracr.jp" >> $GITHUB_ENV
-          echo "PROD_SAKURACR_REGISTRY=${PROD_REGISTRY_PART1}.${PROD_REGISTRY_PART2}" >> $GITHUB_ENV
-          # DEV 用レジストリも同様に処理
-          echo "DEV_REGISTRY_PART1=kazeburo-learn-dev" >> $GITHUB_ENV
-          echo "DEV_REGISTRY_PART2=sakuracr.jp" >> $GITHUB_ENV
-          echo "DEV_SAKURACR_REGISTRY=${DEV_REGISTRY_PART1}.${DEV_REGISTRY_PART2}" >> $GITHUB_ENV
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -38,7 +28,7 @@ jobs:
       - name: Login to Sakura Container Registry
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.PROD_SAKURACR_REGISTRY }}
+          registry: kazeburo-learn-prod.sakuracr.jp
           username: ${{ secrets.SAKURACR_USER }}
           password: ${{ secrets.SAKURACR_PASSWORD }}
         if: ${{ steps.tagpr.outputs.tag != ''}}
@@ -50,8 +40,8 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: |
-            ${{ env.PROD_SAKURACR_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.PROD_SAKURACR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tagpr.outputs.tag }}
+            kazeburo-learn-prod.sakuracr.jp/${{ env.IMAGE_NAME }}:latest
+            kazeburo-learn-prod.sakuracr.jp/${{ env.IMAGE_NAME }}:${{ steps.tagpr.outputs.tag }}
         if: ${{ steps.tagpr.outputs.tag != ''}}
 
       - name: "[DEV] checkout pull request"
@@ -63,7 +53,7 @@ jobs:
       - name: "[DEV] Login to Sakura Container Registry"
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.DEV_SAKURACR_REGISTRY }}
+          registry: kazeburo-learn-dev.sakuracr.jp
           username: ${{ secrets.DEV_SAKURACR_USER }}
           password: ${{ secrets.DEV_SAKURACR_PASSWORD }}
         if: ${{ steps.tagpr.outputs.pull_request != ''}}
@@ -75,6 +65,6 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: |
-            ${{ env.DEV_SAKURACR_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.DEV_SAKURACR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ fromJson(steps.tagpr.outputs.pull_request).haed.label }}
+            kazeburo-learn-dev.sakuracr.jp/${{ env.IMAGE_NAME }}:latest
+            kazeburo-learn-dev.sakuracr.jp/${{ env.IMAGE_NAME }}:${{ fromJson(steps.tagpr.outputs.pull_request).haed.label }}
         if: ${{ steps.tagpr.outputs.pull_request != ''}}
