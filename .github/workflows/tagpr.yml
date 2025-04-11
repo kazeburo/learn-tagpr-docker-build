@@ -37,6 +37,7 @@ jobs:
 
       - name: Build and push to Sakura Container Registry
         uses: docker/build-push-action@v2
+        id: prod_build_push_action
         with:
           context: .
           push: true
@@ -46,11 +47,33 @@ jobs:
             ${{ env.PROD_SAKURACR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tagpr.outputs.tag }}
         if: ${{ steps.tagpr.outputs.tag != ''}}
 
+      - name: Create comment.md
+        run: |
+          cat  << 'EOF' > comment.md
+          ## PRODUCTION build and push was succeeded
+          Successfully built and pushed **the production** Docker image for this pull request #${{ fromJson(steps.tagpr.outputs.pull_request).number }}.
+          Please check the following images:
+          ```
+          docker pull ${{ env.PROD_SAKURACR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ fromJson(steps.tagpr.outputs.pull_request).head.ref }}
+          docker pull ${{ env.PROD_SAKURACR_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          ```
+          Commit SHA: `${{ fromJson(steps.tagpr.outputs.pull_request).head.sha }}`
+          EOF
+        if: ${{ steps.tagpr.outputs.tag != '' && steps.prod_build_push_action.outcome == 'success'  }}
+
+      - name: Post a comment
+        run: |
+          gh pr comment ${{ fromJson(steps.tagpr.outputs.pull_request).number }} --body-file comment.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: ${{ steps.tagpr.outputs.tag != '' && steps.prod_build_push_action.outcome == 'success'  }}
+
+
       - name: "[DEV] checkout pull request"
         uses: actions/checkout@v4
         with:
           ref: ${{ fromJson(steps.tagpr.outputs.pull_request).head.sha }}
-        if: ${{ steps.tagpr.outputs.pull_request != ''}}
+        if: ${{ steps.tagpr.outputs.tag == ''}}
 
       - name: "[DEV] Login to Sakura Container Registry"
         uses: docker/login-action@v3
@@ -58,7 +81,7 @@ jobs:
           registry: ${{ env.DEV_SAKURACR_REGISTRY }}
           username: ${{ secrets.DEV_SAKURACR_USER }}
           password: ${{ secrets.DEV_SAKURACR_PASSWORD }}
-        if: ${{ steps.tagpr.outputs.pull_request != ''}}
+        if: ${{ steps.tagpr.outputs.tag == ''}}
 
       - name: "[DEV] Build and push to Sakura Container Registry"
         uses: docker/build-push-action@v2
@@ -70,13 +93,13 @@ jobs:
           tags: |
             ${{ env.DEV_SAKURACR_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.DEV_SAKURACR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ fromJson(steps.tagpr.outputs.pull_request).head.ref }}
-        if: ${{ steps.tagpr.outputs.pull_request != ''}}
+        if: ${{ steps.tagpr.outputs.tag == ''}}
 
-      - name: Create comment.md
+      - name: "[DEV] Create comment.md"
         run: |
           cat  << 'EOF' > comment.md
-          ## The build and push was succeeded
-          Successfully built and pushed the release candidate Docker image for this pull request #${{ fromJson(steps.tagpr.outputs.pull_request).number }}.
+          ## Release Candidate build and push was succeeded
+          Successfully built and pushed **the release candidate** Docker image for this pull request #${{ fromJson(steps.tagpr.outputs.pull_request).number }}.
           Please check the following images:
           ```
           docker pull ${{ env.DEV_SAKURACR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ fromJson(steps.tagpr.outputs.pull_request).head.ref }}
@@ -84,11 +107,11 @@ jobs:
           ```
           Commit SHA: `${{ fromJson(steps.tagpr.outputs.pull_request).head.sha }}`
           EOF
-        if: ${{ steps.tagpr.outputs.pull_request != '' && steps.dev_build_push_action.outcome == 'success'  }}
+        if: ${{ steps.tagpr.outputs.tag == '' && steps.dev_build_push_action.outcome == 'success'  }}
 
-      - name: Post a comment
+      - name: "[DEV] Post a comment"
         run: |
-          gh pr comment ${{ fromJson(steps.tagpr.outputs.pull_request).number }} --body-file comment.md --create-if-none --edit-last
+          gh pr comment ${{ fromJson(steps.tagpr.outputs.pull_request).number }} --body-file comment.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: ${{ steps.tagpr.outputs.pull_request != '' && steps.dev_build_push_action.outcome == 'success'  }}
+        if: ${{ steps.tagpr.outputs.tag == '' && steps.dev_build_push_action.outcome == 'success'  }}
