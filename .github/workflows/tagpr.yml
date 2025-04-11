@@ -60,6 +60,11 @@ jobs:
           password: ${{ secrets.DEV_SAKURACR_PASSWORD }}
         if: ${{ steps.tagpr.outputs.pull_request != ''}}
 
+      - name: "[DEV] Debug pull_request"
+        run: |
+          echo "pull_request: ${{ steps.tagpr.outputs.pull_request }}"
+        if: ${{ steps.tagpr.outputs.pull_request != ''}}
+
       - name: "[DEV] Build and push to Sakura Container Registry"
         uses: docker/build-push-action@v2
         with:
