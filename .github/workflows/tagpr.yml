@@ -20,8 +20,14 @@ jobs:
       - name: Set environment variables
         run: |
           echo "IMAGE_NAME=learn-tagpr-build" >> $GITHUB_ENV
-          echo "PROD_SAKURACR_REGISTRY=kazeburo-learn-prod.sakuracr.jp" >> $GITHUB_ENV
-          echo "DEV_SAKURACR_REGISTRY=kazeburo-learn-dev.sakuracr.jp" >> $GITHUB_ENV
+          # PROD 用レジストリを分割して再構成
+          echo "PROD_REGISTRY_PART1=kazeburo-learn-prod" >> $GITHUB_ENV
+          echo "PROD_REGISTRY_PART2=sakuracr.jp" >> $GITHUB_ENV
+          echo "PROD_SAKURACR_REGISTRY=${PROD_REGISTRY_PART1}.${PROD_REGISTRY_PART2}" >> $GITHUB_ENV
+          # DEV 用レジストリも同様に処理
+          echo "DEV_REGISTRY_PART1=kazeburo-learn-dev" >> $GITHUB_ENV
+          echo "DEV_REGISTRY_PART2=sakuracr.jp" >> $GITHUB_ENV
+          echo "DEV_SAKURACR_REGISTRY=${DEV_REGISTRY_PART1}.${DEV_REGISTRY_PART2}" >> $GITHUB_ENV
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
