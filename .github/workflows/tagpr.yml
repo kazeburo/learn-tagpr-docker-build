@@ -68,5 +68,5 @@ jobs:
           platforms: linux/amd64
           tags: |
             ${{ env.DEV_SAKURACR_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.DEV_SAKURACR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ fromJson(steps.tagpr.outputs.pull_request).haed.label }}
+            ${{ env.DEV_SAKURACR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ fromJson(steps.tagpr.outputs.pull_request).head.label }}
         if: ${{ steps.tagpr.outputs.pull_request != ''}}
