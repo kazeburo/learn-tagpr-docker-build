@@ -54,10 +54,10 @@ jobs:
           Successfully built and pushed **the production** Docker image for this pull request #${{ fromJson(steps.tagpr.outputs.pull_request).number }}.
           Please check the following images:
           ```
-          docker pull ${{ env.PROD_SAKURACR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ fromJson(steps.tagpr.outputs.pull_request).head.ref }}
           docker pull ${{ env.PROD_SAKURACR_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          docker pull ${{ env.PROD_SAKURACR_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tagpr.outputs.tag }}
           ```
-          Commit SHA: `${{ fromJson(steps.tagpr.outputs.pull_request).head.sha }}`
+          Commit SHA: `${{ github.sha }}`
           EOF
         if: ${{ steps.tagpr.outputs.tag != '' && steps.prod_build_push_action.outcome == 'success'  }}
 
