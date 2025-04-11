@@ -74,7 +74,7 @@ jobs:
 
       - name: Create comment.md
         run: |
-          cat  << EOF > comment.md
+          cat  << 'EOF' > comment.md
           ## The build and push was succeeded
           Successfully built and pushed the release candidate Docker image for this pull request #${{ fromJson(steps.tagpr.outputs.pull_request).number }}.
           Please check the following images:
