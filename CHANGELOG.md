@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.0.2](https://github.com/kazeburo/learn-tagpr-docker-build/compare/v0.0.1...v0.0.2) - 2025-04-11
+- post comment by @kazeburo in https://github.com/kazeburo/learn-tagpr-docker-build/pull/20
+- hello japan by @kazeburo in https://github.com/kazeburo/learn-tagpr-docker-build/pull/22
+
 ## [v0.0.1](https://github.com/kazeburo/learn-tagpr-docker-build/commits/v0.0.1) - 2025-04-11
 - fix dirname by @kazeburo in https://github.com/kazeburo/learn-tagpr-docker-build/pull/1
 - fix typo by @kazeburo in https://github.com/kazeburo/learn-tagpr-docker-build/pull/2
