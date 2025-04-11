@@ -64,7 +64,7 @@ jobs:
         run: |
           echo "$DUMP"
         env:
-          DUMP: ${{ steps.tagpr.outputs.pull_request }}
+          DUMP: ${{ toJson(fromJson(steps.tagpr.outputs.pull_request).head) }}
         if: ${{ steps.tagpr.outputs.pull_request != ''}}
 
       - name: "[DEV] Build and push to Sakura Container Registry"
