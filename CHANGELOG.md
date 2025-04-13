@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.0.4](https://github.com/kazeburo/learn-tagpr-docker-build/compare/v0.0.3...v0.0.4) - 2025-04-13
+- use pull-request-comment by @kazeburo in https://github.com/kazeburo/learn-tagpr-docker-build/pull/26
+- change html by @kazeburo in https://github.com/kazeburo/learn-tagpr-docker-build/pull/28
+
 ## [v0.0.3](https://github.com/kazeburo/learn-tagpr-docker-build/compare/v0.0.2...v0.0.3) - 2025-04-11
 - fix comment by @kazeburo in https://github.com/kazeburo/learn-tagpr-docker-build/pull/23
 - modify html by @kazeburo in https://github.com/kazeburo/learn-tagpr-docker-build/pull/25
