@@ -62,12 +62,13 @@ jobs:
         if: ${{ steps.tagpr.outputs.tag != '' && steps.prod_build_push_action.outcome == 'success'  }}
 
       - name: Post a comment
-        run: |
-          gh pr comment ${{ fromJson(steps.tagpr.outputs.pull_request).number }} --body-file comment.md
-        env:
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: "PRODUCTION build and push was succeeded"
+          number: ${{ fromJson(steps.tagpr.outputs.pull_request).number  }}
+          path: comment.md
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: ${{ steps.tagpr.outputs.tag != '' && steps.prod_build_push_action.outcome == 'success'  }}
-
 
       - name: "[DEV] checkout pull request"
         uses: actions/checkout@v4
@@ -110,8 +111,10 @@ jobs:
         if: ${{ steps.tagpr.outputs.tag == '' && steps.dev_build_push_action.outcome == 'success'  }}
 
       - name: "[DEV] Post a comment"
-        run: |
-          gh pr comment ${{ fromJson(steps.tagpr.outputs.pull_request).number }} --body-file comment.md
-        env:
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: "Release Candidate build and push was succeeded"
+          number: ${{ fromJson(steps.tagpr.outputs.pull_request).number  }}
+          path: comment.md
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: ${{ steps.tagpr.outputs.tag == '' && steps.dev_build_push_action.outcome == 'success'  }}
